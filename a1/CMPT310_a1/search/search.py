@@ -90,17 +90,86 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # pseudo code source used: https://en.wikipedia.org/wiki/Depth-first_search
+    visited = set()
+
+    # init stack with starting state
+    initState = ( problem.getStartState(), [] )
+    fringe = util.Stack()
+    fringe.push( initState )
+    
+    # iteratively search through graph
+    while not fringe.isEmpty():
+        state, actions = fringe.pop()
+
+        # check if initial state is the goal state
+        if problem.isGoalState( state ):
+            return actions
+    
+        if state not in visited:
+            visited.add( state )
+            for stepState, stepActions, _ in problem.getSuccessors( state ):
+                if stepState not in visited:
+                    fringe.push( (stepState, actions + [stepActions] ) )
+
+    return []
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # similar to DFS, but now with a queue
+    visited = set()
+
+    # init queue with stating state
+    initState = ( problem.getStartState(), [] )
+    fringe = util.Queue()
+    fringe.push( initState)
+
+    while not fringe.isEmpty():
+        state, actions = fringe.pop()
+
+        # check if initial state is the goal state
+        if problem.isGoalState( state ):
+            return actions
+    
+        if state not in visited:
+            visited.add( state )
+            for stepState, stepActions, _ in problem.getSuccessors( state ):
+                if stepState not in visited:
+                    fringe.push( (stepState, actions + [stepActions]) )
+
+    return []
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    visited = set()
+
+    # init priority queue with stating state
+    # tuple with state, actions, and cost
+    initState = ( problem.getStartState(), [], 0 )
+    fringe = util.PriorityQueue()
+    fringe.push( initState, 0 )
+
+    while not fringe.isEmpty():
+        state, actions, cost = fringe.pop() 
+
+        # check if inital state is the goal state
+        if problem.isGoalState( state ):
+            return actions
+        
+        if state not in visited:
+            visited.add( state )
+            for stepState, stepActions, stepCost in problem.getSuccessors( state ):
+                if stepState not in visited:
+                    # use total cost as the priority value
+                    totalCost = cost + stepCost
+                    fringe.push( (stepState, actions + [stepActions], totalCost), totalCost )
+    
+    return []
 
 def nullHeuristic(state, problem=None) -> float:
     """
@@ -112,7 +181,29 @@ def nullHeuristic(state, problem=None) -> float:
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    visited = set()
+
+    initState = ( problem.getStartState(), [], 0 )
+    fringe = util.PriorityQueue()
+    fringe.push( initState, 0 )
+
+    while not fringe.isEmpty():
+        state, actions, cost = fringe.pop()
+
+        if problem.isGoalState( state ):
+            return actions
+        
+        if state not in visited:
+            visited.add( state )
+            for stepState, stepActions, stepCost in problem.getSuccessors( state ):
+                if stepState not in visited:
+                    # combine path cost and heuristic together 
+                    pathCost = cost + stepCost
+                    heuristicCost = heuristic( stepState, problem )
+                    fringe.push( (stepState, actions + [stepActions], pathCost), pathCost + heuristicCost )
+
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch
