@@ -366,11 +366,10 @@ class CornersProblem(search.SearchProblem):
         return len(actions)
 
 
+# manhattan distance helper function
+def manhattanDistance( point1: Tuple[int, int], point2: Tuple[int, int] ) -> int:
 
-def manhattanDistance( xy1: Tuple[int, int], xy2: Tuple[int, int] ) -> int:
-    "Using manhattan disttance for cornersHeuristic"
-
-    return abs( xy1[0] - xy2[0] ) + abs( xy1[1] - xy2[1] )
+    return abs( point1[0] - point2[0] ) + abs( point1[1] - point2[1] )
 
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
@@ -401,20 +400,12 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     if not unvisitedCorners:
         return 0
     
-    heuristic = 0
-    
-    while unvisitedCorners:
-        # use manhattan distance to get the closest corner
-        distances = []
-        for corner in unvisitedCorners:
-            distances.append(manhattanDistance( currentPosition, corner ))
-        minDistance = min( distances )
-        heuristic += minDistance
+    # use manhattan distance to calculate distance to the closest corner
+    distances = []
+    for corner in unvisitedCorners:
+        distances.append(manhattanDistance( currentPosition, corner ))
 
-        # update current position and remove the corner from unvisitedCorners
-        closestCorner = unvisitedCorners[distances.index( minDistance )]
-        unvisitedCorners.remove( closestCorner )
-    
+    heuristic = max( distances )
     return heuristic
 
 class AStarCornersAgent(SearchAgent):

@@ -178,13 +178,17 @@ def nullHeuristic(state, problem=None) -> float:
     """
     return 0
 
+
+# source I used to help me with this function: https://stackoverflow.com/questions/28620511/a-search-not-working-in-python
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
 
-    visited = set()
-
-    initState = ( problem.getStartState(), [], 0 )
+    visited = {}
+ 
+    # init priority queue with stating state
+    # tuple with state, actions, and cost
+    initState = ( problem.getStartState(), [], 0)
     fringe = util.PriorityQueue()
     fringe.push( initState, 0 )
 
@@ -194,10 +198,9 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         if problem.isGoalState( state ):
             return actions
         
-        if state not in visited:
-            visited.add( state )
+        if state not in visited or cost < visited[state]:
+            visited[state] = cost
             for stepState, stepActions, stepCost in problem.getSuccessors( state ):
-                if stepState not in visited:
                     # combine path cost and heuristic together 
                     pathCost = cost + stepCost
                     heuristicCost = heuristic( stepState, problem )
